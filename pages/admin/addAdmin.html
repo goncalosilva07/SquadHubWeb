@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Convidar Administrador</h6>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Email</label>
+                            <input class="form-control" type="text" id="email" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <a class="btn btn-success btn-sm" type="button" id="inviteAdmin" style="margin-top: 33px;">Convidar</a>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-footer pb-0 p-3">
+                <div class="d-flex justify-content-between" style="font-size: 12px; margin-bottom: 10px">
+                   *Um pedido de adesão ao clube será enviado ao administrador.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var addAdmin = {
+        inviteAdmin: function (){
+
+            var obj = {
+                route: "inviteAdmin",
+                email: $("#email").val(),
+            }
+
+            if (obj.email != "" && obj.email != contentHub.userInfo.user.email){
+                $.ajax({
+                    url: "../route.php",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(obj),
+                    success: function (data) {
+                        
+                        $(".contentHubInjection").html('');
+                        $(".contentHubInjection").load("./admin/admin.html");
+                        $(".changePageName").html("Admins");
+                    },
+                    error: function (data) {
+                        var responseText = jQuery.parseJSON(data.responseText);
+                        alert(responseText.message);
+                    }
+                });
+            }else{
+                alert("Erro. O email inserido coincide com o seu próprio email.");
+            }
+        },
+    };
+
+    $(document).ready(function () {
+        $(document).off('click', '#inviteAdmin');
+        $(document).on('click', '#inviteAdmin', function(e) {
+            addAdmin.inviteAdmin();
+        });
+    });
+
+</script>

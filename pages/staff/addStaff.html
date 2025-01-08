@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Convidar Staff</h6>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Email</label>
+                            <input class="form-control" type="text" id="email" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <a class="btn btn-success btn-sm" type="button" id="invitePlayer" style="margin-top: 33px;">Convidar</a>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-footer pb-0 p-3">
+                <div class="d-flex justify-content-between" style="font-size: 12px; margin-bottom: 10px">
+                   *Um pedido de adesão ao clube será enviado ao staff.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var addPlayer = {
+        invitePlayer: function (){
+
+            var obj = {
+                route: "inviteStaff",
+                email: $("#email").val(),
+            }
+
+            if (obj.email != "" && obj.email != contentHub.userInfo.user.email){
+                $.ajax({
+                    url: "../route.php",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(obj),
+                    success: function (data) {
+                        
+                        $(".contentHubInjection").html('');
+                        $(".contentHubInjection").load("./staff/staff.html");
+                        $(".changePageName").html("Staff");
+                    },
+                    error: function (data) {
+                        var responseText = jQuery.parseJSON(data.responseText);
+                        alert(responseText.message);
+                    }
+                });
+            }else{
+                alert("Preencha os campos de forma correta.");
+            }
+        },
+
+    };
+
+    $(document).ready(function () {
+        $(document).off('click', '#invitePlayer');
+        $(document).on('click', '#invitePlayer', function(e) {
+            
+            addPlayer.invitePlayer();
+        });
+    });
+
+</script>

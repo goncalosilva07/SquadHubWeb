@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Adicionar Jogo</h6>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Oponente</label>
+                            <input class="form-control opponent" type="text" id="opponent" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Competição</label>
+                            <input class="form-control competition" type="text" id="competition" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Local</label>
+                            <input class="form-control local" type="text" id="local" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Data</label>
+                            <input class="form-control date" type="date" id="date" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Hora</label>
+                            <input class="form-control time" type="time" id="time" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <a class="btn btn-success btn-sm" type="button" id="submitGame" style="text-align: right">Submeter Jogo</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var addGame = {
+        route: 'addGame',
+
+        submitGame: function (){
+
+            var obj = {
+                route: addGame.route,
+                opponent: $("#opponent").val(),
+                competition: $("#competition").val(),
+                date: $("#date").val(),
+                time: $("#time").val(),
+                local: $("#local").val()
+            }
+            
+            if (obj.opponent != "" && obj.competition != "" && obj.date != "" && obj.time != "" && obj.local != ""){
+
+                $.ajax({
+                    url: "../route.php",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(obj),
+                    success: function (data) {
+                        $(".contentHubInjection").html('');
+                        $(".contentHubInjection").load("./game/game.html");
+                        $(".changePageName").html("Game");
+                    },
+                    error: function (data) {
+                        var responseText = jQuery.parseJSON(data.responseText);
+                        alert(responseText.message);
+                    }
+                });
+            }else{
+                alert("Preencha os campos de forma correta.");
+            }
+        },
+
+    };
+
+    $(document).ready(function () {
+        $(document).off('click', '#submitGame');
+        $(document).on('click', '#submitGame', function(e) {
+            addGame.submitGame();
+        });
+    });
+
+</script>

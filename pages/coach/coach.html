@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Treinador</h6>
+                    <a class="btn btn-danger btn-sm" type="button" id="removeCoach" style="text-align: right">Remover Treinador</a>
+                    <a class="btn btn-success btn-sm" type="button" id="addCoach" style="text-align: right">Adicionar Treinador</a>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Nome</label>
+                            <input class="form-control username" type="text" id="name" required disabled>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Apelido</label>
+                            <input class="form-control username" type="text" id="surname" required disabled>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Data de início de carreira</label>
+                            <input class="form-control username" type="text" id="careerStartDate" required disabled>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Data de Nascimento</label>
+                            <input class="form-control username" type="text" id="birthdate" required disabled>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Email</label>
+                            <input class="form-control username" type="email" id="email" required disabled>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Telefone</label>
+                            <input class="form-control username" type="tel" id="phone" required disabled>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var coach = {
+        coachInfo: null,
+
+        getCoach: function (){
+            
+
+            var obj = {
+                route: 'getCoach'     
+            }
+
+            $.ajax({
+                url: "../route.php",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    
+                    data = jQuery.parseJSON(data);
+                    if (data == null){
+                        $(".cardBody").html("CLUBE SEM TREINADOR").css({
+                            "text-align": "center",
+                            "height": "200px",
+                            "padding-top": "80px"
+                        });
+
+                        $("#removeCoach").remove();
+                    }else{
+                        $("#addCoach").remove();
+
+                        coach.coachInfo = data;
+
+                        $("#name").val(data.name);
+                        $("#surname").val(data.surname);
+                        $("#birthdate").val(data.birthdate);
+                        $("#careerStartDate").val(data.careerStartDate);
+                        $("#email").val(data.email);
+                        $("#phone").val(data.phone);
+                    }
+                },
+                error: function (data) {
+                    var responseText = jQuery.parseJSON(data.responseText);
+                    alert(responseText.message);
+                }
+            });
+
+        },
+
+        deleteCoach: function (){
+            var obj = {
+                route: 'deleteCoachFromClub',
+                idCoach: coach.coachInfo.id
+            }
+            
+            $.ajax({
+                url: "../route.php",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    $(".contentHubInjection").html('');
+                    $(".contentHubInjection").load("./coach/coach.html");
+                    $(".changePageName").html("Coach");
+                },
+                error: function (data) {
+                    var responseText = jQuery.parseJSON(data.responseText);
+                    alert(responseText.message);
+                }
+            });
+
+        },
+    };
+
+    $(document).ready(function () {
+        
+        coach.getCoach();
+
+        if (contentHub.userInfo.user.permissions.find(x => x.id == 15) == null){
+            $("#addCoach").remove();
+        }
+
+        if (contentHub.userInfo.user.permissions.find(x => x.id == 16) == null){
+            $("#removeCoach").remove();
+        }
+
+        $(document).off('click', '#addCoach');
+        $(document).on('click', '#addCoach', function(e) {
+            $(".contentHubInjection").html('');
+            $(".contentHubInjection").load("./coach/addCoach.html");
+            $(".changePageName").html("Invite Coach");
+        });
+
+        $(document).off('click', '#removeCoach');
+        $(document).on('click', '#removeCoach', function(e) {
+            Swal.fire({
+                title: 'Tem a certeza que deseja remover o treinador?',
+                text: "Não poderá reverter esta ação!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Aceitar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    coach.deleteCoach();
+                }
+            });
+        });
+    });
+
+</script>

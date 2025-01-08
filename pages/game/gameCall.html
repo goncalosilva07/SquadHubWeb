@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+  .select2-container .select2-selection--single {
+    height: 38px;
+  }
+
+  .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 38px;
+  }
+
+  .select2-selection__arrow {
+    height: 35px !important;
+  }
+
+  .wrapper {
+    width: 70%;
+    margin-top: 40px;
+    padding: 5px 10px;
+    background-color: #17191F;
+    /*background-color: rgb(15, 105, 11);*/
+    border-radius: 5px;
+  }
+
+  .campo {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    width: 100%;
+    height: 0;
+    margin: 10px auto;
+    padding: 0 0 60% 0;
+    /*background: green;*/
+    /*background-color: rgb(15, 73, 12);*/
+    background-color: #17191F;
+  }
+
+  .interior,
+  .divisoria,
+  .semi1,
+  .semi2,
+  .corner {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    /*border: 1px solid #323642;*/
+    border: 2px solid #ffffff;
+  }
+
+  .divisoria:after,
+  .divisoria:before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    display: block;
+    width: 0;
+    height: 100%;
+    margin-left: .5px;
+    /*border: 0.5px solid #323642;*/
+    border: 1px solid #ffffff;
+  }
+
+  .divisoria:before {
+    top: 50%;
+    width: 17%;
+    height: 0;
+    margin: -8% 0 0 -8%;
+    margin-top: calc(-8% - 4px);
+    margin-left: calc(-8.5% - .5px);
+    padding-bottom: 17%;
+    border-radius: 50%;
+    /*border: 1px solid #323642;*/
+    border: 2px solid #ffffff;
+  }
+
+  .campo:before,
+  .campo:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 1px;
+    margin: -8% 0 0 -1px;
+    display: block;
+    width: 8%;
+    height: 30%;
+    /*border: 1px solid #323642;*/
+    border: 2px solid #ffffff;
+    z-index: 2;
+  }
+
+  .campo:after {
+    left: auto;
+    right: -2px;
+  }
+
+  .interior:before,
+  .interior:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    margin: -16% 0 0 -1px;
+    display: block;
+    width: 16%;
+    height: 55%;
+    /*background: rgb(27,31,38);*/
+    background-color: #17191F;
+    /*border: 1px solid #323642;*/
+    border: 2px solid #ffffff;
+    /*background-color: rgb(15, 73, 12);*/
+  }
+
+  .interior:after {
+    left: auto;
+    right: 0;
+    margin: -16% -1px 0 0;
+  }
+
+  .semi2:before {
+    left: auto;
+    right: 12%;
+  }
+
+  .semi1:after,
+  .semi2:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 5%;
+    width: 16%;
+    height: 0;
+    margin: -8% 0 0 0;
+    padding-bottom: 16%;
+    /*border: 1px solid #323642;*/
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+  }
+
+  .semi2:after {
+    left: auto;
+    right: 5%;
+  }
+
+  .gk {
+    content: "";
+    position: absolute;
+    top: 48%;
+    left: 0%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    /*background-color: #4F7EDC;
+    border: 1px solid #324978;
+    border-radius: 50%;
+    */
+    z-index: 2;
+  }
+
+  .lb {
+    content: "";
+    position: absolute;
+    top: 10%;
+    left: 14%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .cb3 {
+    content: "";
+    position: absolute;
+    top: 48%;
+    left: 14%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .cb1 {
+    content: "";
+    position: absolute;
+    top: 30%;
+    left: 14%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .cb2 {
+    content: "";
+    position: absolute;
+    top: 65%;
+    left: 14%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .rb {
+    content: "";
+    position: absolute;
+    top: 85%;
+    left: 14%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .lwb {
+    content: "";
+    position: absolute;
+    top: 10%;
+    left: 30%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .dm {
+    content: "";
+    position: absolute;
+    top: 48%;
+    left: 30%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .rwb {
+    content: "";
+    position: absolute;
+    top: 85%;
+    left: 30%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .lm {
+    content: "";
+    position: absolute;
+    top: 10%;
+    left: 49%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .cm1 {
+    content: "";
+    position: absolute;
+    top: 48%;
+    left: 49%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .cm2 {
+    content: "";
+    position: absolute;
+    top: 30%;
+    left: 49%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .cm3 {
+    content: "";
+    position: absolute;
+    top: 65%;
+    left: 49%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .rm {
+    content: "";
+    position: absolute;
+    top: 85%;
+    left: 49%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .amr {
+    content: "";
+    position: absolute;
+    top: 10%;
+    left: 67%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .am {
+    content: "";
+    position: absolute;
+    top: 48%;
+    left: 67%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .aml {
+    content: "";
+    position: absolute;
+    top: 85%;
+    left: 67%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .wl {
+    content: "";
+    position: absolute;
+    top: 10%;
+    left: 83%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .wr {
+    content: "";
+    position: absolute;
+    top: 85%;
+    left: 83%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 2;
+  }
+
+  .st {
+    content: "";
+    position: absolute;
+    top: 48%;
+    left: 83%;
+    display: block;
+    width: 12%;
+    height: 8%;
+    z-index: 3;
+  }
+</style>
+
+<div class="row mt-4">
+  <div class="col-lg-12 mb-lg-0 mb-4">
+    <div class="card ">
+      <div class="card-header pb-0 p-3">
+        <div class="d-flex justify-content-between">
+          <h6 class="mb-2">Convocatória</h6>
+        </div>
+      </div>
+      <div class="card-body cardBody">
+        <div class="row">
+
+          <center>
+            <div class="wrapper">
+              <div class="campo">
+
+                <div class="semi1"></div>
+                <div class="semi2"></div>
+                <div class="divisoria"></div>
+                <div class="interior"></div>
+                <div class="penalty"></div>
+
+                <div class="gk">
+                  <select class="form-select players_select" id="gk_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="gk" selected>GK</option>
+                  </select>
+                </div>
+
+                <div class="cb1">
+                  <select class="players_select" id="cb1_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="cb1" selected>CB</option>
+                  </select>
+                </div>
+
+                <div class="cb2">
+                  <select class="form-select players_select" id="cb2_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="cb2" selected>CB</option>
+                  </select>
+                </div>
+
+                <div class="cb3">
+                  <select class="form-select players_select" id="cb3_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="cb3" selected>CB</option>
+                  </select>
+                </div>
+
+                <div class="lb">
+                  <select class="form-select players_select" id="lb_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="lb" selected>LB</option>
+                  </select>
+                </div>
+
+                <div class="rb">
+                  <select class="form-select players_select" id="rb_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="rb" selected>RB</option>
+                  </select>
+                </div>
+
+                <div class="lwb">
+                  <select class="form-select players_select" id="lwb_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="lwb" selected>LWB</option>
+                  </select>
+                </div>
+
+                <div class="dm">
+                  <select class="form-select players_select" id="dm_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="dm" selected>DM</option>
+                  </select>
+                </div>
+
+                <div class="rwb">
+                  <select class="form-select players_select" id="rwb_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="rwb" selected>RWB</option>
+                  </select>
+                </div>
+
+                <div class="lm">
+                  <select class="form-select players_select" id="lm_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="lm" selected>LM</option>
+                  </select>
+                </div>
+
+                <div class="cm1">
+                  <select class="form-select players_select" id="cm1_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="cm1" selected>CM</option>
+                  </select>
+                </div>
+
+                <div class="cm2">
+                  <select class="form-select players_select" id="cm2_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="cm2" selected>CM</option>
+                  </select>
+                </div>
+
+                <div class="cm3">
+                  <select class="form-select players_select" id="cm3_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="cm3" selected>CM</option>
+                  </select>
+                </div>
+
+                <div class="rm">
+                  <select class="form-select players_select" id="rm_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="rm" selected>RM</option>
+                  </select>
+                </div>
+
+                <div class="amr">
+                  <select class="form-select players_select" id="amr_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="amr" selected>AMR</option>
+                  </select>
+                </div>
+
+                <div class="am">
+                  <select class="form-select players_select" id="am_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="am" selected>AM</option>
+                  </select>
+                </div>
+
+                <div class="aml">
+                  <select class="form-select players_select" id="aml_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="aml" selected>AML</option>
+                  </select>
+                </div>
+
+                <div class="wl">
+                  <select class="form-select players_select" id="wl_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="wl" selected>WL</option>
+                  </select>
+                </div>
+
+                <div class="st">
+                  <select class="form-select players_select" id="st_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="st" selected>ST</option>
+                  </select>
+                </div>
+
+                <div class="wr">
+                  <select class="form-select players_select" id="wr_select"
+                    style="background-position: bottom; width: 100%; height: 100%;">
+                    <option class="positionName" value="-1" data-id="wr" selected>WR</option>
+                  </select>
+                </div>
+
+              </div>
+            </div>
+          </center>
+
+          <div class="col-md-8 row" style="margin-top: 50px; margin-left: auto; margin-right: auto;">
+            <h5>Substituições</h5>
+            <div class="col-md-4">
+              <select class="form-select players_select" id="sub_select"
+                style="background-position: bottom; width: 100%; height: 100%;">
+                <option value="-1" data-id="sub" selected>Substituto</option>
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <a class="btn btn-success btn-sm" type="button" id="addSub">Adicionar</a>
+            </div>
+
+            <table id="subsTable" class="display" style="width:100%">
+              <thead>
+                <tr>
+                  <th>id</th>
+                  <th>Nome</th>
+                  <th></th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+
+
+
+        </div>
+      </div>
+      <div class="card-footer pb-0 p-3">
+        <div class="d-flex justify-content-between">
+          <a class="btn btn-success btn-sm" type="button" id="submitGameCall" style="text-align: right">Submeter</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</html>
+
+<script>
+
+  var gameCall = {
+    idGame: localStorage.getItem("idGame"),
+    gameDate: localStorage.getItem("gameDate"),
+    table: null,
+    tableData: [],
+
+    getPlayers: function () {
+      
+      var obj = {
+        route: 'getPlayersWithoutInjury',
+        gameDate: gameCall.gameDate
+      }
+
+      
+
+      $.ajax({
+        url: "../route.php",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(obj),
+        success: function (data) {
+          
+          data = jQuery.parseJSON(data);
+
+          var options = [];
+
+          data.forEach(player => {
+            var obj = {
+              id: player.id,
+              text: player.name + " " + player.surname
+            }
+            options.push(obj);
+          });
+
+          $('.players_select').select2();
+
+          options.forEach(function (option) {
+            
+            const newOption = new Option(option.text, option.id, false, false);
+            $('.players_select').append(newOption).trigger('change');
+          });
+
+          gameCall.getGameCallData();
+
+        },
+        error: function (data) {
+          var responseText = jQuery.parseJSON(data.responseText);
+          alert(responseText.message);
+        }
+      });
+
+    },
+
+    getGameCallData: function () {
+
+      var obj = {
+        route: 'getGameCallData',
+        idGame: gameCall.idGame
+      }
+
+      $.ajax({
+        url: "../route.php",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(obj),
+        success: function (data) {
+          
+          data = jQuery.parseJSON(data);
+
+          if (data.isCreated) {
+
+            data.playersList.forEach(element => {
+              
+              if (element.position != 'sub') {
+                $("#" + element.position + "_select").val(element.idUser).trigger("change");
+              } else {
+                var obj = {
+                  id: element.idUser,
+                  name: element.name + " " + element.surname
+                }
+                gameCall.tableData.push(obj);
+              }
+            });
+          }
+
+          gameCall.verifyDateToUpdate();
+    
+          $('#subsTable').DataTable().destroy(); // Remove a instância atual
+
+          gameCall.table = $('#subsTable').DataTable({
+            data: gameCall.tableData,
+            columns: [
+              { data: "id" },
+              { data: "name" }
+            ],
+
+            columnDefs: [
+              {
+                "targets": 0,
+                "visible": false
+              },
+              {
+                "targets": 2,
+                "width": "8%",
+                "orderable": false,
+                "render": function (data, type, row, meta) {
+                  var html = "<div style='width: 100%'>";
+                  var now = moment();
+                  var gameDate = moment(gameCall.gameDate);
+                  if (!now.isAfter(gameDate) && contentHub.userInfo.user.permissions.find(x => x.id == 23) != null) {
+                    html += "<a type='button' title='Remover' class='material-symbols-outlined deleteSub'>delete</a>";
+                  }                                
+                  html += "</div>";
+                  return html;
+                }
+              },
+
+            ],
+          });
+
+        },
+        error: function (data) {
+          var responseText = jQuery.parseJSON(data.responseText);
+          alert(responseText.message);
+        }
+      });
+
+    },
+
+    submitGameCall: function () {
+
+      var playerList = [];
+      var error = 0;
+
+      $(".players_select").each(function (index, element) {
+        if ($(element).val() != -1 && $(element).find('option[value="-1"]').data('id') != 'sub') {
+          var obj = {
+            id: $(element).val(),
+            position: $(element).find('option[value="-1"]').data('id')
+          }
+          
+          if (!(playerList.find(x => x.id == obj.id))) {
+            playerList.push(obj);
+          } else {
+            error++;
+          }
+
+        }
+      });
+
+      var startTeam = playerList.length;
+      
+
+      gameCall.tableData.forEach(element => {
+        
+        if (!(playerList.find(x => x.id == element.id))) {
+          
+          var obj = {
+            id: element.id,
+            position: 'sub'
+          }
+          playerList.push(obj);
+        } else {
+          error++;
+        }
+      });
+
+      if (error > 0) {
+        //if(error == -1){
+        alert("Erro. Repetição de jogadores na convocatória.");
+      } else {
+        if (startTeam == 11) {
+          //if (playerList.length > 0) {
+          if (playerList.find(x => x.position == 'gk') != null) {
+            var obj = {
+              route: 'submitGameCall',
+              idGame: gameCall.idGame,
+              playersList: playerList
+            }
+            
+            $.ajax({
+              url: "../route.php",
+              type: "POST",
+              contentType: "application/json",
+              data: JSON.stringify(obj),
+              success: function (data) {
+                alert(data.message);
+              },
+              error: function (data) {
+                var responseText = jQuery.parseJSON(data.responseText);
+                alert(responseText.message);
+              }
+            });
+          } else {
+            alert("Posição de jogador em falta.");
+          }
+        } else {
+          alert("Quantidade de jogadores diferente de 11.");
+        }
+      }
+    },
+
+    addSub: function () {
+
+      if ($("#sub_select").val() != -1){
+        var obj = {
+          id: $("#sub_select").val(),
+          name: $("#sub_select").select2('data')[0].text
+        }
+
+        if (!(gameCall.tableData.find(x => x.id == obj.id))) {
+          gameCall.tableData.push(obj);
+          gameCall.updateTable();
+        } else {
+          alert("Jogadores Repetidos.");
+        }
+      }
+    },
+
+    deleteSub: function (idUser) {
+      gameCall.tableData = gameCall.tableData.filter(x => x.id != idUser);
+      gameCall.updateTable();
+    },
+
+    updateTable: function () {
+      gameCall.table.clear().rows.add(gameCall.tableData).draw();
+    },
+
+    verifyDateToUpdate() {
+      //Função para verificar se a convocatoria é alteravel ou não. 
+      //Se o jogo já tiver sido jogado não é possivel alterar
+      
+      var now = moment();
+      var gameDate = moment(gameCall.gameDate);
+
+      if (now.isAfter(gameDate)) {
+        
+        $(".players_select").prop('disabled', true);
+        $("#submitGameCall").remove();
+        $("#sub_select").next('.select2-container').remove();
+        $("#addSub").remove();
+
+        $(".players_select").each(function () {
+            if ($(this).val() === "-1") {
+              $(this).next('.select2-container').hide();
+            }
+        });
+      }
+    },
+  };
+
+  $(document).ready(function () {
+
+    gameCall.getPlayers();
+
+    if (contentHub.userInfo.user.permissions.find(x => x.id == 23) == null) {
+      $(".players_select").prop('disabled', true);
+      $("#submitGameCall").remove();
+      $("#sub_select").remove();
+      $("#addSub").remove();
+    }
+    
+    localStorage.removeItem("idGame");
+    localStorage.removeItem("gameDate");
+
+    $(document).off('click', '#submitGameCall');
+    $(document).on('click', '#submitGameCall', function (e) {
+      gameCall.submitGameCall();
+    });
+
+    $(document).off('click', '#addSub');
+    $(document).on('click', '#addSub', function (e) {
+      gameCall.addSub();
+    });
+
+    $(document).off('click', '.deleteSub');
+    $(document).on('click', '.deleteSub', function (e) {
+      var rowData = gameCall.table.row(e.target.parentElement.parentElement._DT_CellIndex.row).data();
+      gameCall.deleteSub(rowData.id);
+    });
+
+  });
+
+</script>

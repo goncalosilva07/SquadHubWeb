@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SquadHub</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</head>
+
+<style>
+    .btn {
+        transition: transform 0.3s;
+    }
+
+    .btn:hover {
+        transform: scale(1.03);
+        /* Aumenta o tamanho em 10% ao passar o mouse */
+    }
+
+    .input{
+        width: 100%; 
+        height: 7vh !important; 
+        border-top-color: #C8AB37; 
+        border-top-width: 0.6vh; 
+        border-radius: 8px; 
+        background-color: white !important; 
+        font-size:33px; text-align: center;
+    }
+
+    .divInput {
+        margin-left: 20vh; 
+        margin-right: 20vh; 
+        margin-top: 1vh;
+    }
+
+    .inputLabels {
+        width: 90px;
+        margin-left: 20vh; 
+        margin-top: 10vh;
+    }
+
+    .inputLabels2 {
+        width: 180px;
+        margin-left: 20vh; 
+        margin-top: 10vh;
+    }
+    /*
+    style="width: 180px; margin-left: 20vh; margin-top: 5vh;"
+    */
+
+    @media (max-width: 1200px) {
+  
+        .logoImg{
+            width: 40vh !important;
+        }
+
+        .input{
+            width: 200px; 
+            height: 7vh !important; 
+            border-top-color: #C8AB37; 
+            border-top-width: 0.6vh; 
+            border-radius: 8px; 
+            background-color: white !important; 
+            font-size:33px; text-align: center;
+        }
+
+        .divInput {
+            margin-left: 20vh; 
+            margin-right: 20vh; 
+            margin-top: 1vh;
+        }
+
+        .inputLabels {
+            width: 60px;
+            margin-left: 20vh; 
+            margin-top: 10vh;
+        }
+
+        .inputLabels2 {
+            width: 120px;
+            margin-left: 20vh; 
+            margin-top: 10vh;
+        }
+
+        #loginBtn{
+            width: 200px;
+        }
+
+        .loginBtnImg{
+            width: 120px;
+        }
+    }   
+
+
+    @media (max-width: 1600px) {
+        .logoDiv{
+            display: none !important;
+        }
+
+        .inputDiv{
+            height: 100vh;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .input{
+            width: 100%; 
+            height: 7vh !important; 
+            border-top-color: #C8AB37; 
+            border-top-width: 0.6vh; 
+            border-radius: 8px; 
+            background-color: white !important; 
+            font-size:33px; text-align: center;
+        }
+
+        #loginBtn{
+            width: 100%;
+        }
+
+        .input{
+            width: 300px; 
+            height: 7vh !important; 
+            border-top-color: #C8AB37; 
+            border-top-width: 0.6vh; 
+            border-radius: 8px; 
+            background-color: white !important; 
+            font-size:33px; text-align: center;
+        }
+
+        #loginBtn{
+            width: 300px;
+        }
+    }
+
+    @media (max-width: 1200px) {
+    
+        
+        .inputDiv{
+            margin-left: 50px;
+        }
+       
+    }
+
+
+
+    @media (max-width: 767px) {
+
+        .input{
+            width: 100%; 
+            height: 7vh !important; 
+            border-top-color: #C8AB37; 
+            border-top-width: 0.6vh; 
+            border-radius: 8px; 
+            background-color: white !important; 
+            font-size:33px; text-align: center;
+        }
+
+        #loginBtn{
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 670px) {
+
+        .input{
+            width: 200px; 
+            height: 7vh !important; 
+            border-top-color: #C8AB37; 
+            border-top-width: 0.6vh; 
+            border-radius: 8px; 
+            background-color: white !important; 
+            font-size:33px; text-align: center;
+        }
+
+        #loginBtn{
+            width: 200px;
+        }
+
+
+    }
+
+    @media (max-width: 470px) {
+        .inputDiv{
+            margin-left: -40px;
+        }   
+    }
+
+    @media (max-width: 430px) {
+        .inputDiv{
+            margin-left: -70px;
+        }   
+    }
+
+
+    @media (max-width: 400px) {
+    .inputDiv{
+        margin-left: -100px;
+    }    
+    }
+
+
+</style>
+
+<body>
+    <div class="col-md-12 row" style="background-color: #094570;">
+
+        <div class="col-md-5 d-flex justify-content-center align-items-center logoDiv"
+            style="background-color: #052c48; min-height: 100vh;">
+            <img src="../resources/images/squadhublogo.png" style="width: 46vh;" class="logoImg">
+        </div>
+
+        <div class="col-md-6 inputDiv" style="margin-top: 14vh;">
+            <img src="../resources/images/name.png" class="inputLabels">
+            <div class="form-group divInput">
+                <input type="text" class="form-control input" id="userNameInput">
+            </div>
+
+            <img src="../resources/images/password.png" class="inputLabels2">
+            <div class="form-group divInput">
+                <input type="password" class="form-control input" id="passwordInput">
+            </div>
+
+            <!--<button style="width: 58%; margin-left: 20vh; margin-right: 20vh; height: 8vh; background-color: #C8AB37;"><img src="login.png" style="width: 10vh;"></button>
+            -->
+            <div class="form-group" style="margin-left: 20vh; margin-right: 20vh; margin-top: 8vh;">
+                <button type="button" class="form-control" id="loginBtn"
+                    style="height: 8vh; border-color: #C8AB37; border-radius: 8px; background-color: #C8AB37 !important;">
+                    <img src="../resources/images/login.png" style="width: 10vh; margin-top: 0.6vh;" class="loginBtnImg">
+                </button>   
+                <div style="text-align: right; margin-top: 1.5vh;">
+                    <a href="./register.html"><img src="../resources/images/registerBtn.png" style="width: 22vh; margin-top: 0.6vh;"></a>
+                </div>      
+            </div>
+    </div>
+    </div>
+
+</body>
+
+</html>
+
+<script>
+
+    function login() {
+
+        var obj = {
+            username: $("#userNameInput").val(),
+            password: $("#passwordInput").val(),
+        };
+
+        $.ajax({
+            url: "../login.php",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(obj),
+            success: function (data) {
+                
+                data = jQuery.parseJSON(data);
+
+                var url = "./contentHub.html";
+                window.location.href = url;
+            },
+            error: function (data) {
+                var responseText = jQuery.parseJSON(data.responseText);
+                alert(responseText.message);
+            }
+        });
+    }
+
+    $(document).ready(function () {
+
+        $("#loginBtn").on("click", function (e) {
+            login();
+        });
+
+    });
+
+</script>

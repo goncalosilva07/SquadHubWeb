@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Jogadores</h6>
+                    <a class="btn btn-success btn-sm" type="button" id="addPlayer" style="text-align: right">Adicionar Jogador</a>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+
+                    <div class="col-md-12" style="margin-top: 20px">
+                        <table id="playersTable" class="display" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>idClub</th>
+                                <th>Nome de Utilizador</th>
+                                <th>Nome</th>
+                                <th>Apelido</th>
+                                <th>Data de Nascimento</th>
+                                <th>Email</th>
+                                <th>Telefone</th>
+                                <th>Golos</th>
+                                <th>Assistências</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var player = {
+        table: null,
+        tableData: [],
+
+        getPlayers: function (){
+            
+            var obj = {
+                route: 'getPlayers'     
+            }
+
+            $.ajax({
+                url: "../route.php",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    
+                    data = jQuery.parseJSON(data);
+                    player.tableData = data;
+                    player.updateTable();
+                },
+                error: function (data) {
+                    var responseText = jQuery.parseJSON(data.responseText);
+                    alert(responseText.message);
+                }
+            });
+
+        },
+
+        deletePlayer: function (idPlayer){
+
+            var obj = {
+                route: 'deletePlayerFromClub',
+                idPlayer: idPlayer
+            }
+            
+            $.ajax({
+                url: "../route.php",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    $(".contentHubInjection").html('');
+                    $(".contentHubInjection").load("./player/player.html");
+                    $(".changePageName").html("Players");
+                },
+                error: function (data) {
+                    var responseText = jQuery.parseJSON(data.responseText);
+                    alert(responseText.message);
+                }
+            });
+
+        },
+
+        updateTable: function () {
+            player.table.clear().rows.add(player.tableData).draw();
+        },
+    };
+
+    $(document).ready(function () {
+        
+
+        if(contentHub.userInfo.user.permissions.find(x => x.id == 13) == null){
+            $("#addPlayer").remove();
+        }
+
+        player.getPlayers();
+
+        player.table = $('#playersTable').DataTable({
+            data: player.tableData,
+            columns: [
+                { data: "id" },
+                { data: "idClub" },
+                { data: "username" },
+                { data: "name" },
+                { data: "surname" },
+                { data: "birthdate" },
+                { data: "email" },
+                { data: "phone" },
+                { data: "goals" },
+                { data: "assists" },
+            ],
+
+            columnDefs: [
+                {
+                    "targets": 0,
+                    "visible": false
+                },
+                {
+                    "targets": 1,
+                    "visible": false
+                },
+                {
+                    "targets": 10,
+                    "width": "12%",
+                    "orderable": false,
+                    "render": function(data, type, row, meta) {
+                        
+                        var html = "<div style='width: 100%'>";
+                        if (contentHub.userInfo.user.permissions.find(x => x.id == 29) != null){
+                            html += "<a type='button' title='Performance' class='material-symbols-outlined performancePlayer'>timeline</a>";
+                        }
+                        if (contentHub.userInfo.user.permissions.find(x => x.id == 19) != null){
+                            html += "<a type='button' title='Lesão' class='material-symbols-outlined injuryPlayer'>personal_injury</a>";
+                        }
+                        if (contentHub.userInfo.user.permissions.find(x => x.id == 14) != null){
+                            html += "<a type='button' title='Remover' class='material-symbols-outlined removePlayer'>delete</a>";
+                        }                   
+                        html += "</div>";
+                        return html;
+                    }
+                },
+            ],
+
+
+
+        });
+
+
+        $(document).off('click', '#addPlayer');
+        $(document).on('click', '#addPlayer', function(e) {
+            $(".contentHubInjection").html('');
+            $(".contentHubInjection").load("./player/addPlayer.html");
+            $(".changePageName").html("Invite Player");
+        });
+
+        $(document).off('click', '.removePlayer');
+        $(document).on('click', '.removePlayer', function(e) {
+            
+            Swal.fire({
+                title: 'Tem a certeza que deseja remover o jogador?',
+                text: "Não poderá reverter esta ação!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Aceitar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var rowData = player.table.row(e.target.parentElement.parentElement._DT_CellIndex.row).data();
+                    player.deletePlayer(rowData.id);
+                }
+            });
+        });
+
+        $(document).off('click', '.injuryPlayer');
+        $(document).on('click', '.injuryPlayer', function(e) {
+            var rowData = player.table.row(e.target.parentElement.parentElement._DT_CellIndex.row).data();
+            localStorage.setItem("idPlayer", rowData.id);
+            $(".contentHubInjection").html('');
+            $(".contentHubInjection").load("./player/playerInjury.html");
+            $(".changePageName").html("Player Injuries");
+        });
+
+        $(document).off('click', '.performancePlayer');
+        $(document).on('click', '.performancePlayer', function(e) {
+            var rowData = player.table.row(e.target.parentElement.parentElement._DT_CellIndex.row).data();
+            localStorage.setItem("idPlayer", rowData.id);
+            $(".contentHubInjection").html('');
+            $(".contentHubInjection").load("./player/playerPerformance.html");
+            $(".changePageName").html("Player Performance");
+        });
+
+
+    });
+
+</script>

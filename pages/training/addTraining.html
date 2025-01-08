@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Adicionar Treino</h6>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+
+                    <div class="col-md-3">
+                        <label class="form-control-label">Tipo de Treino</label>
+                        <select class="form-select" id="trainingTypeSelect">
+                            <option value="-1" selected>Selecionar Tipo de Treino</option>
+                            <option value="Treino Técnico">Treino Técnico</option>
+                            <option value="Treino Tático">Treino Tático</option>
+                            <option value="Treino Físico">Treino Físico</option>
+                            <option value="Treino de Recuperação">Treino de Recuperação</option>
+                            <option value="Treino Coletivo">Treino Coletivo</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Data</label>
+                            <input class="form-control date" type="date" id="date" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Hora Início</label>
+                            <input class="form-control time" type="time" id="startTime" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="form-control-label">Hora Fim</label>
+                        <input class="form-control time" type="time" id="endTime" required>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="card-footer pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <a class="btn btn-success btn-sm" type="button" id="submitTraining" style="text-align: right">Submeter Treino</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var addTraining = {
+        submitTraining: function (){
+            
+            var obj = {
+                route: "addTrainingSession",
+                trainingType: $("#trainingTypeSelect").val(),
+                date: $("#date").val(),
+                startTime: $("#startTime").val(),
+                endTime: $("#endTime").val(),
+            }
+
+            if (obj.trainingType != "-1" && obj.date != "" && obj.startTime != "" && obj.endTime != ""){
+                $.ajax({
+                    url: "../route.php",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(obj),
+                    success: function (data) {
+                        
+                        $(".contentHubInjection").html('');
+                        $(".contentHubInjection").load("./training/training.html");
+                        $(".changePageName").html("Training Sessions");
+                    },
+                    error: function (data) {
+                        var responseText = jQuery.parseJSON(data.responseText);
+                        alert(responseText.message);
+                    }
+                });
+            }else{
+                alert("Preencha os campos de forma correta.");
+            }
+        },
+
+    };
+
+    $(document).ready(function () {
+        $(document).off('click', '#submitTraining');
+        $(document).on('click', '#submitTraining', function(e) {
+            addTraining.submitTraining();
+        });
+    });
+
+</script>

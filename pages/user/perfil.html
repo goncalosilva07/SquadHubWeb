@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow {
+        height: 35px !important;
+    }
+
+    .circle {
+        width: 200px;
+        /* Largura do círculo */
+        height: 200px;
+        /* Altura do círculo */
+        border-radius: 50%;
+        /* Torna o div redondo */
+        overflow: hidden;
+        /* Garante que a imagem não saia do círculo */
+        display: flex;
+        /* Opcional: para centrar conteúdo se necessário */
+        align-items: center;
+        /* Opcional: centragem vertical */
+        justify-content: center;
+        /* Opcional: centragem horizontal */
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    .circle img {
+        width: 100%;
+        /* A imagem ocupa toda a largura */
+        height: 100%;
+        /* A imagem ocupa toda a altura */
+        object-fit: cover;
+        /* Faz com que a imagem se ajuste ao círculo */
+    }
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Perfil</h6>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+                    <div class="col-md-12 circle" style="text-align: center;">             
+                        <img id="photo" src="../resources/images/userDefault.png">
+                    </div>
+
+
+                    <div class="form-group col-md-12">
+                        <label for="fileToUpload">Foto de Perfil</label>
+                        <input type="file" class="form-control" name="photo" id="fileToUpload" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Username</label>
+                            <input class="form-control" type="text" id="username" disabled>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Tipo de Utilizador</label>
+                            <input class="form-control" type="text" id="role" disabled>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4"></div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Nome</label>
+                            <input class="form-control" type="text" id="name">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Apelido</label>
+                            <input class="form-control" type="text" id="surname">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Data de Nascimento</label>
+                            <input class="form-control" type="date" id="birthdate">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-control-label">Email</label>
+                            <input class="form-control" type="email" id="email" required>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-control-label">Telefone</label>
+                            <input class="form-control" type="text" id="phone" required>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-footer pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <a class="btn btn-success btn-sm" type="button" id="updateUserData"
+                        style="text-align: right">Atualizar Dados</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var perfil = {
+        userData: null,
+        photo: false,
+
+        getUserData: function () {
+
+            var obj = {
+                route: "getUserData"
+            }
+
+            $.ajax({
+                url: "../route.php",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+
+                    data = jQuery.parseJSON(data);
+                    perfil.userData = data;
+
+                    $("#username").val(data.username);
+                    $("#name").val(data.name);
+                    $("#surname").val(data.surname);
+                    $("#birthdate").val(data.birthdate);
+                    $("#email").val(data.email);
+                    $("#phone").val(data.phone);
+                    $("#role").val(data.role);
+                    
+                    if (data.photo != null){
+                        $("#photo").attr("src", 'https://esan-tesp-ds-paw.web.ua.pt/tesp-ds-g28/uploads/' + data.photo);
+                    }
+                    
+                    var dataTransfer = new DataTransfer();
+                    // Adiciona um arquivo simulado
+                    dataTransfer.items.add(new File([""], data.photo != null ? data.photo : "Selecione uma foto"));
+
+                    // Aplica o arquivo simulado ao input
+                    $("#fileToUpload")[0].files = dataTransfer.files;
+                },
+                error: function (data) {
+                    var responseText = jQuery.parseJSON(data.responseText);
+                    alert(responseText.message);
+                }
+            });
+        },
+
+        updateUserData: function () {
+
+            var obj = {
+                route: "updateUserData",
+                name: $("#name").val(),
+                surname: $("#surname").val(),
+                birthdate: $("#birthdate").val(),
+                email: $("#email").val(),
+                phone: $("#phone").val(),
+            }
+
+            if (obj.name != "" && obj.surname != "" && obj.birthdate != "" && obj.email != "" && obj.phone != "") {
+
+                $.ajax({
+                    url: "../route.php",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(obj),
+                    success: function (data) {
+                        if (perfil.photo) {
+                            var fileInput = $("#fileToUpload").prop('files')[0];
+
+                            if (fileInput) {
+                                var formData = new FormData();
+                                // Adicionar o ficheiro ao FormData
+                                formData.append("idUser", contentHub.userInfo.user.id);
+                                formData.append("photo", $("#fileToUpload").prop('files')[0]);
+
+                                $.ajax({
+                                    url: "../uploadPhoto.php",
+                                    type: "POST",
+                                    data: formData,
+                                    processData: false, // Necessário para enviar o FormData sem processamento
+                                    contentType: false, // Necessário para que o jQuery não defina o cabeçalho Content-Type
+                                    success: function (data) {
+                                        window.location.href = "./contentHub.html";
+                                    },
+                                    error: function (data) {
+                                        var responseText = jQuery.parseJSON(data.responseText);
+                                        alert(responseText.message);
+                                    }
+                                });
+                            }
+                        }else{
+                            window.location.href = "./contentHub.html";
+                        }
+
+                    },
+                    error: function (data) {
+                        var responseText = jQuery.parseJSON(data.responseText);
+                        alert(responseText.message);
+                    }
+                });
+            } else {
+                alert("Preencha os campos de forma correta.");
+            }
+        },
+
+    };
+
+    $(document).ready(function () {
+
+        perfil.getUserData();
+
+        $(document).off('click', '#updateUserData');
+        $(document).on('click', '#updateUserData', function (e) {
+            perfil.updateUserData();
+        });
+
+        $("#fileToUpload").on('change', function () {
+            if (this.files.length > 0) {
+                perfil.photo = true;
+            }
+        });
+    });
+
+</script>

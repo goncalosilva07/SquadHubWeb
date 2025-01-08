@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Lesões</h6>
+                    <a class="btn btn-success btn-sm" type="button" id="addPlayerInjury" style="text-align: right">Adicionar Lesão</a>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+
+                    <div class="col-md-12" style="margin-top: 20px">
+                        <table id="playersTable" class="display" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>Lesão</th>
+                                <th>Data de Início</th>
+                                <th>Data de Fim</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var playerInjury = {
+        table: null,
+        tableData: [],
+        idPlayer: localStorage.getItem("idPlayer"),
+
+        getPlayerInjuries: function (){
+            
+            var obj = {
+                route: 'getPlayerInjuries' ,
+                idPlayer: playerInjury.idPlayer    
+            }
+
+            $.ajax({
+                url: "../route.php",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    
+                    data = jQuery.parseJSON(data);
+                    playerInjury.tableData = data;
+                    playerInjury.updateTable();
+                },
+                error: function (data) {
+                    var responseText = jQuery.parseJSON(data.responseText);
+                    alert(responseText.message);
+                }
+            });
+
+        },
+
+        deletePlayerInjury: function (idInjury){
+
+            var obj = {
+                route: 'deletePlayerInjury',
+                idPlayer: playerInjury.idPlayer,
+                idInjury: idInjury
+            }
+            
+            $.ajax({
+                url: "../route.php",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    localStorage.setItem("idPlayer", playerInjury.idPlayer);
+                    $(".contentHubInjection").html('');
+                    $(".contentHubInjection").load("./player/playerInjury.html");
+                    $(".changePageName").html("Players");
+                },
+                error: function (data) {
+                    var responseText = jQuery.parseJSON(data.responseText);
+                    alert(responseText.message);
+                }
+            });
+
+        },
+
+        updateTable: function () {
+            playerInjury.table.clear().rows.add(playerInjury.tableData).draw();
+        },
+    };
+
+    $(document).ready(function () {
+
+        if(contentHub.userInfo.user.permissions.find(x => x.id == 20) == null){
+            $("#addPlayerInjury").remove();
+        }
+
+        playerInjury.getPlayerInjuries();
+
+        localStorage.removeItem("idPlayer");
+
+        playerInjury.table = $('#playersTable').DataTable({
+            data: playerInjury.tableData,
+            columns: [
+                { data: "id" },
+                { data: "injury" },
+                { data: "startDate" },
+                { data: "endDate" },
+            ],
+
+            columnDefs: [
+                {
+                    "targets": 0,
+                    "visible": false
+                },
+                {
+                    "targets": 3,
+                    "render": function(data, type, row, meta) {
+                        
+                        if(row.endDate == null){
+                            return "SEM DATA PREVISTA";
+                        }else{
+                            return row.endDate;
+                        }
+                        
+                    }
+                },
+                {
+                    "targets": 4,
+                    "width": "10%",
+                    "orderable": false,
+                    "render": function(data, type, row, meta) {
+                        
+                        var html = "<div style='width: 100%'>";
+                        if (contentHub.userInfo.user.permissions.find(x => x.id == 22) != null){
+                            html += "<a type='button' title='Editar' class='material-symbols-outlined editPlayerInjury'>edit</a>";
+                        } 
+                        if (contentHub.userInfo.user.permissions.find(x => x.id == 21) != null){
+                            html += "<a type='button' title='Remover' class='material-symbols-outlined removePlayerInjury'>delete</a>";
+                        }                                          
+                        html += "</div>";
+                        return html;
+                    }
+                },
+            ],
+
+
+
+        });
+
+        $(document).off('click', '#addPlayerInjury');
+        $(document).on('click', '#addPlayerInjury', function(e) {
+            localStorage.setItem("idPlayer", playerInjury.idPlayer);
+            $(".contentHubInjection").html('');
+            $(".contentHubInjection").load("./player/addPlayerInjury.html");
+            $(".changePageName").html("Add Injury");
+        });
+
+        $(document).off('click', '.editPlayerInjury');
+        $(document).on('click', '.editPlayerInjury', function(e) {
+            
+            var rowData = playerInjury.table.row(e.target.parentElement.parentElement._DT_CellIndex.row).data();
+            localStorage.setItem("idPlayer", playerInjury.idPlayer);
+            localStorage.setItem("idInjury",rowData.id);
+            $(".contentHubInjection").html('');
+            $(".contentHubInjection").load("./player/editPlayerInjury.html");
+            $(".changePageName").html("Edit Injury");
+        });
+
+        $(document).off('click', '.removePlayerInjury');
+        $(document).on('click', '.removePlayerInjury', function(e) {
+            
+            Swal.fire({
+                title: 'Tem a certeza que deseja remover a lesão?',
+                text: "Não poderá reverter esta ação!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Aceitar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var rowData = playerInjury.table.row(e.target.parentElement.parentElement._DT_CellIndex.row).data();
+                    playerInjury.deletePlayerInjury(rowData.id);
+                }
+            });
+        });
+
+    });
+
+</script>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Performance</h6>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+
+                    <canvas id="myChart" width="100%" height="20%"></canvas>
+
+                    <div class="col-md-12" style="margin-top: 20px">
+                        <table id="performanceTable" class="display" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Treino</th>
+                                <th>Performance</th>
+                                <th>Notas</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var performance = {
+        table: null,
+        tableData: [],
+ 
+        getPerformances: function (){
+            
+            var obj = {
+                route: 'getPlayerPerformance'     
+            }
+
+            $.ajax({
+                url: "../route.php",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    
+                    data = jQuery.parseJSON(data);
+                    performance.tableData = data;
+                    performance.updateTable();
+
+
+
+                    /*******************************/
+
+
+                    
+
+
+                    var labels = [];
+                    var dataForGraph = [];
+
+                    /*
+                    var dataGraph = {
+                        labels: null,
+                        datasets: null,
+                    };
+                    */
+
+
+                    $.each(data, function( index, value ) {
+
+                        
+                        if (index <= 5){
+                            labels.push(value.date);
+                            var performance = null;
+
+                            switch (value.pontuation) {
+                                case 'Ótimo':
+                                    performance = 5;
+                                    break;
+                                case 'Bom':
+                                    performance = 4;
+                                    break;
+                                case 'Satisfatório':
+                                    performance = 3;
+                                    break;
+                                case 'Insuficiente':
+                                    performance = 2;
+                                    break;
+                                case 'Crítico':
+                                    performance = 1;
+                                    break;                
+                                default:
+                                    performance = 0;
+                                    break;
+                            }
+                            dataForGraph.push(performance);
+                        }else{
+                            return false;
+                        }
+
+                       
+                    });
+
+    
+/*
+                    var dataGraph = {
+                        labels: data.date,
+                        datasets: [{
+                            label: 'Monthly Sales',
+                            data: [12, 19, 3, 5, 2, 3],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    };
+                    */
+
+                    var dataGraph = {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Performance',
+                            data: dataForGraph,
+                            
+                            borderWidth: 1
+                        }]
+                    };
+
+                    // Configuração do gráfico
+                    const config = {
+                        type: 'bar', // Tipo do gráfico
+                        data: dataGraph,
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Sales Performance'
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    };
+
+                    // Criar o gráfico com jQuery
+                    const ctx = $('#myChart')[0].getContext('2d'); // Selecionar o canvas usando jQuery
+                    const myChart = new Chart(ctx, config);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                },
+                error: function (data) {
+                    var responseText = jQuery.parseJSON(data.responseText);
+                    alert(responseText.message);
+                }
+            });
+
+        },
+
+        updateTable: function () {
+            performance.table.clear().rows.add(performance.tableData).draw();
+        },
+    };
+
+    $(document).ready(function () {
+
+        performance.getPerformances();
+
+        $('#performanceTable').DataTable().destroy(); // Remove a instância atual
+
+        performance.table = $('#performanceTable').DataTable({
+            data: performance.tableData,
+            columns: [
+                { data: "date" },
+                { data: "trainingType" },
+                { data: "pontuation" },
+                { data: "description" }
+            ],
+
+            columnDefs: [
+            ],
+        });    
+    
+    });
+
+</script>

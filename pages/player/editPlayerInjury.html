@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Editar Lesão</h6>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Lesão</label>
+                            <input class="form-control" type="text" id="injury">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Data de Início</label>
+                            <input class="form-control" type="date" id="startDate">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Data de Fim</label>
+                            <input class="form-control" type="date" id="endDate">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-footer pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <a class="btn btn-success btn-sm" type="button" id="updateInjury" style="margin-top: 33px;">Submeter</a>    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var editPlayerInjury = {
+        injuryInfo: null,
+        idPlayer: localStorage.getItem("idPlayer"),
+        idInjury: localStorage.getItem("idInjury"),
+        isInjuryMenu: localStorage.getItem("isInjuryMenu"),
+
+        getInjuryInfo: function (){
+
+            var obj = {
+                route: "getPlayerInjuryInfo",
+                idPlayer: editPlayerInjury.idPlayer,
+                idInjury: editPlayerInjury.idInjury
+                }
+
+                if ((obj.idPlayer != "" && obj.idPlayer != null) && (obj.idInjury != "" && obj.idInjury != null)){
+                    $.ajax({
+                        url: "../route.php",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify(obj),
+                        success: function (data) {
+                            data = jQuery.parseJSON(data);
+                            editPlayerInjury.injuryInfo = data;
+                            
+                            $("#injury").val(editPlayerInjury.injuryInfo.injury);
+                            $("#startDate").val(editPlayerInjury.injuryInfo.startDate);
+                            $("#endDate").val(editPlayerInjury.injuryInfo.endDate);
+                        },
+                        error: function (data) {
+                            var responseText = jQuery.parseJSON(data.responseText);
+                            alert(responseText.message);
+                        }
+                    });
+                }else{
+                    alert("Preencha os campos de forma correta.");
+                }
+            
+        },
+        
+        updateInjury: function (){
+
+            var startDate = moment($("#startDate").val());
+            var endDate = moment($("#endDate").val());
+
+            if((startDate < endDate) || ($("#endDate").val() == "")){
+                var obj = {
+                route: "editPlayerInjury",
+                idPlayer: editPlayerInjury.idPlayer,
+                idInjury: editPlayerInjury.idInjury,
+                injury: $("#injury").val(),
+                startDate: $("#startDate").val(),
+                endDate: $("#endDate").val(),
+                }
+
+                if (obj.injury != "" && obj.startDate != "" && (obj.idPlayer != "" && obj.idPlayer != null) && (obj.idInjury != "" && obj.idInjury != null)){
+                    $.ajax({
+                        url: "../route.php",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify(obj),
+                        success: function (data) {
+                            if (!editPlayerInjury.isInjuryMenu){
+                                localStorage.setItem("idPlayer", editPlayerInjury.idPlayer);
+                                localStorage.setItem("idInjury", editPlayerInjury.idInjury);
+                                $(".contentHubInjection").html('');
+                                $(".contentHubInjection").load("./player/playerInjury.html");
+                                $(".changePageName").html("Player Injuries");
+                            }else{
+                                $(".contentHubInjection").html('');
+                                $(".contentHubInjection").load("./injury/injury.html");
+                                $(".changePageName").html("Injuries");
+                            }
+                            
+                        },
+                        error: function (data) {
+                            var responseText = jQuery.parseJSON(data.responseText);
+                            alert(responseText.message);
+                        }
+                    });
+                }else{
+                    alert("Preencha os campos de forma correta.");
+                }
+            }else{
+                alert("Datas preenchidas de forma incorreta.");
+            } 
+        },
+
+    };
+
+    $(document).ready(function () {
+
+        localStorage.removeItem("idPlayer");
+        localStorage.removeItem("idInjury");
+        localStorage.removeItem("isInjuryMenu");
+
+        editPlayerInjury.getInjuryInfo();
+
+        $(document).off('click', '#updateInjury');
+        $(document).on('click', '#updateInjury', function(e) {
+            editPlayerInjury.updateInjury();
+        });
+    });
+
+</script>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+</style>
+<body>
+    <div class="row mt-4">
+        <div class="col-lg-12 mb-lg-0 mb-4">
+            <div class="card ">
+                <div class="card-header pb-0 p-3">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="mb-2">Criar Clube</h6>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-control-label">Nome do Clube</label>
+                                <input class="form-control clubname" type="text" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-control-label">Abreviação</label>
+                                <input class="form-control abbreviation" type="text" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6"></div>
+
+                        <div class="col-md-3">
+                            <button type="button" class="button-3 createClubBtn">Criar Clube</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    var createClub = {
+        route: "createClub",
+
+        submitClub: function (){
+
+            var obj = {
+                route: createClub.route,
+                name: $(".clubname").val(),
+                abbreviation: $(".abbreviation").val(),
+            }
+            
+            $.ajax({
+                //url: contentHub.urlPhp + 'createClub.php',
+                url: "../route.php",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    
+                    //alert(data);
+                    //$(".contentHubInjection").load("/dashboard");
+                    window.location.href = "./contentHub.html";
+                },
+                error: function (data) {
+                    var responseText = jQuery.parseJSON(data.responseText);
+                    alert(responseText.message);
+                }
+            });
+
+        },
+    };
+
+    $(document).ready(function () {
+
+        $(document).off('click', '.createClubBtn');
+        $(".createClubBtn").on("click", function (e) {
+            createClub.submitClub();
+        });
+
+    });
+</script>

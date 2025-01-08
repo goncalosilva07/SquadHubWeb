@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Rating do Treino</h6>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+
+                    <div class="col-md-12" style="margin-top: 20px">
+                        <table id="playersRatingTable" class="display" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>idUser</th>
+                                <th>idTraining</th>
+                                <th>idTrainingPerformance</th>
+                                <th>Nome</th>
+                                <th>Apelido</th>
+                                <th>Nota</th>
+                                <th>Descrição</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <a class="btn btn-success btn-sm" type="button" id="submitRating" style="text-align: right">Submeter Ratings</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var trainingRating = {
+        table: null,
+        tableData: [],
+        idTraining: localStorage.getItem('idTraining'),
+
+        getPlayersAndRatings: function (){
+            
+            var obj = {
+                route: "getPlayersTrainingsRatings",
+                idTraining: trainingRating.idTraining
+            }
+
+            $.ajax({
+                url: "../route.php",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    
+                    data = jQuery.parseJSON(data);
+                    trainingRating.tableData = data;
+                    trainingRating.updateTable();
+                },
+                error: function (data) {
+                    var responseText = jQuery.parseJSON(data.responseText);
+                    alert(responseText.message);
+                }
+            });
+
+        },
+
+        submitPlayersRatings: function (){
+
+            var ratingListCreate = [];
+            var ratingListUpdate = [];
+            var ratingListDelete = [];
+            
+            trainingRating.table.rows().every(function(rowIdx, tableLoop, rowLoop) {
+                var data = this.data(); // Recupera os dados da linha atual
+                
+                data.pontuation = $("#playerRating_" + data.idUser).val();
+                data.description = $("#ratingDescription_" + data.idUser).val();
+
+                if (data.idTrainingPerformance == 0 && data.pontuation != '-1'){
+                    ratingListCreate.push(data);
+                }else if (data.idTrainingPerformance != 0 && data.pontuation != '-1'){
+                    ratingListUpdate.push(data);
+                }else if (data.idTrainingPerformance != 0 && data.pontuation == '-1'){
+                    ratingListDelete.push(data);
+                }
+            });
+            
+            var obj = {
+                route: "submitPlayersTrainingsRatings",
+                idTraining: trainingRating.idTraining,
+                ratingListCreate: ratingListCreate,
+                ratingListUpdate: ratingListUpdate,
+                ratingListDelete: ratingListDelete
+            }
+
+            $.ajax({
+                url: "../route.php",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    alert(data.message);
+                    $(".contentHubInjection").html('');
+                    $(".contentHubInjection").load("./training/training.html");
+                    $(".changePageName").html("Training Sessions");
+                },
+                error: function (data) {
+                    
+                    var responseText = jQuery.parseJSON(data.responseText);
+                    alert(responseText.message);
+                }
+            });
+
+        },
+
+        updateTable: function () {
+            trainingRating.table.clear().rows.add(trainingRating.tableData).draw();
+        },
+    };
+
+    $(document).ready(function () {
+        
+        trainingRating.getPlayersAndRatings();
+
+        localStorage.removeItem("idTraining");
+
+        trainingRating.table = $('#playersRatingTable').DataTable({
+            data: trainingRating.tableData,
+            pageLength: 100,
+            dom: 't',
+            columns: [
+                { data: "idUser" },
+                { data: "idTraining" },
+                { data: "idTrainingPerformance" },
+                { data: "name" },
+                { data: "surname" },
+            ],
+
+            columnDefs: [
+                {
+                    "targets": 0,
+                    "visible": false
+                },
+                {
+                    "targets": 1,
+                    "visible": false
+                },
+                {
+                    "targets": 2,
+                    "visible": false
+                },
+                {
+                    "targets": 5,
+                    "width": "25%",
+                    "orderable": false,
+                    "render": function(data, type, row, meta) {
+                        
+                        var html = "<div style='width: 100%'>";
+                        html += "<select class=\"form-select\" class='playerRating' id='playerRating_" + row.idUser +"'>\n" +
+                            "<option value='-1' " + (row.pontuation == null ? 'selected' : '') + ">Selecionar Nota</option>\n" +
+                            "<option value='Ótimo' " + (row.pontuation == 'Ótimo' ? 'selected' : '') + ">Ótimo</option>\n" +
+                            "<option value='Bom' " + (row.pontuation == 'Bom' ? 'selected' : '') + ">Bom</option>\n" +
+                            "<option value='Satisfatório' " + (row.pontuation == 'Satisfatório' ? 'selected' : '') + ">Satisfatório</option>\n" +
+                            "<option value='Insuficiente' " + (row.pontuation == 'Insuficiente' ? 'selected' : '') + ">Insuficiente</option>\n" +
+                            "<option value='Crítico' " + (row.pontuation == 'Crítico' ? 'selected' : '') + ">Crítico</option>\n" +
+                            "select>";
+                        html += "</div>";
+                        return html;
+                    }
+                },
+                {
+                    "targets": 6,
+                    "width": "25%",
+                    "orderable": false,
+                    "render": function(data, type, row, meta) {
+                        
+                        var html = "<div style='width: 100%'>";
+                        html += "<input id='ratingDescription_" + row.idUser +"' class='form-control description' type='text' value='" + (row.description != null ? row.description : '') + "'>";
+                        html += "</div>";
+                        return html;
+                    }
+                },
+            ],
+
+
+
+        });
+
+        $(document).off('click', '#submitRating');
+        $(document).on('click', '#submitRating', function(e) {
+            trainingRating.submitPlayersRatings();
+        });
+
+    });
+
+</script>

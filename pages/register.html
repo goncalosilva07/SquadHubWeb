@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SquadHub</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <link id="pagestyle" href="../resources/css/style.css" rel="stylesheet" />
+</head>
+<style>
+    body {
+        background-color: #052c48;
+    }
+
+    .radioMargin {
+        margin-right: 50px;
+    }
+</style>
+<body>
+    <div class="col-md-12" style="text-align: center; margin-top: 5vh">
+        <img src="../resources/images/squadhublogo.png" width="5%">
+    </div>
+    <div class="col-md-8" style="margin-left: auto; margin-right: auto; margin-top: 5vh">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Registar</h6>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+
+                    <!--
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <input type="file" id="photo" name="img" accept="image/*">
+                        </div>
+                    </div>
+                    -->
+
+                    <div class="form-group col-md-12">
+                        <label for="fileToUpload">Foto de Perfil</label>
+                        <input type="file" class="form-control" name="photo" id="fileToUpload" />
+                        </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Nome de Utilizador</label>
+                            <input class="form-control username" type="text" id="username" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Password</label>
+                            <input class="form-control" type="password" id="password" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Repetir Password</label>
+                            <input class="form-control" type="password" id="repeatPassword" required>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Nome</label>
+                            <input class="form-control name" type="text" id="name" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Apelido</label>
+                            <input class="form-control surname" type="text" id="surname" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Data de Nascimento</label>
+                            <input class="form-control birthOfDate" type="date" id="birthDate" required>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-control-label">Email</label>
+                            <input class="form-control email" type="email" id="email" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-control-label">Telemóvel</label>
+                            <input class="form-control phoneNumber" type="number" id="phone" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-control-label">Cargo</label>
+                        <br>
+                        <div class="form-check form-check-inline radioMargin">
+                            <input class="form-check-input" type="radio" name="role" id="admin" value="1">
+                            <label class="form-check-label" for="admin">Admin</label>
+                        </div>
+                        <div class="form-check form-check-inline radioMargin">
+                            <input class="form-check-input" type="radio" name="role" id="coach" value="2">
+                            <label class="form-check-label" for="coach">Coach</label>
+                        </div>
+                        <div class="form-check form-check-inline radioMargin">
+                            <input class="form-check-input" type="radio" name="role" id="player" value="3">
+                            <label class="form-check-label" for="player">Player</label>
+                        </div>
+                        <div class="form-check form-check-inline radioMargin">
+                            <input class="form-check-input" type="radio" name="role" id="staff" value="4">
+                            <label class="form-check-label" for="staff">Staff</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 careerStartDateDiv">
+                        <div class="form-group">
+                            <label class="form-control-label">Data de Início de Carreira</label>
+                            <input class="form-control" type="date" id="careerStartDate">
+                        </div>
+                    </div>
+
+                    <div class="col-md-12" style="margin-top: 20px">
+                        <button type="button" class="button-3" id="registerBtn" style="width: 200px">Registar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>
+<script>
+
+    function register() {
+        var password = $("#password").val(),
+            repeatPassword = $("#repeatPassword").val();
+
+        if (password != repeatPassword || password == ""){
+            alert("As passwords não coincidem!");
+        }else{
+            
+            var obj = {
+                username: $("#username").val(),
+                name: $("#name").val(),
+                surname: $("#surname").val(),
+                birthDate: $("#birthDate").val(),
+                careerStartDate: $('input[name="role"]:checked').val() == 2 || $('input[name="role"]:checked').val() == 4 ? $("#careerStartDate").val() : null,
+                email: $("#email").val(),
+                phone: $("#phone").val(),
+                password: $("#password").val(),
+                role: $('input[name="role"]:checked').val(),
+            };
+
+            
+            if (obj.username != "" && obj.name != "" && obj.surname != "" && obj.birthDate != "" && obj.email != "" && (obj.phone != "" && obj.phone.length == 9) && obj.role != null){
+                $.ajax({
+                url: "../register.php",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    
+                    var responseText = jQuery.parseJSON(data);
+                    var idUser = responseText.id;
+
+                    var fileInput = $("#fileToUpload").prop('files')[0];
+
+                    if (fileInput){ 
+                        var formData = new FormData();
+                        // Adicionar o ficheiro ao FormData
+                        formData.append("idUser", idUser);
+                        formData.append("photo", $("#fileToUpload").prop('files')[0]);
+
+                        $.ajax({
+                            url: "../uploadPhoto.php", 
+                            type: "POST",
+                            data: formData,
+                            processData: false, // Necessário para enviar o FormData sem processamento
+                            contentType: false, // Necessário para que o jQuery não defina o cabeçalho Content-Type
+                            success: function(data) {
+                                var url = "./login.html";
+                                window.location.href = url;
+                            },
+                            error: function(data) {
+                                var responseText = jQuery.parseJSON(data.responseText);
+                                alert(responseText.message);
+                            }
+                        });
+                    }else{                
+                        var url = "./login.html";
+                        window.location.href = url;
+                    }
+                },
+                error: function (data) {
+                    var responseText = jQuery.parseJSON(data.responseText);
+                    alert(responseText.message);
+                }
+                });
+            }else{
+                alert("Preencha os campos todos corretamente.");
+            }
+           
+        }
+
+    }
+
+    $(document).ready(function () {
+
+        $(".careerStartDateDiv").hide();
+
+        $("#registerBtn").on("click", function (e) {
+            register();
+        });
+
+        $('input[type=radio][name=role]').on('change', function() {
+            var role = $('input[name="role"]:checked').val();
+
+            if (role == 2 || role == 4){
+                $(".careerStartDateDiv").show();
+            }else{
+                $(".careerStartDateDiv").hide();
+            }
+        });
+
+    });
+</script>

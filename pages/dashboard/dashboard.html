@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<div class="row dashboardMainDiv" style="display: flex;">
+
+    <div class="row mt-4 dashboardNoClub">
+        <div class="col-lg-12 mb-lg-0 mb-4">
+            <div class="card ">
+                <div class="card-header pb-0 p-3">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="mb-2">Info</h6>
+                    </div>
+                </div>
+                <div id="mensageNoClub" style="text-align: center; height: 200px; padding-top: 80px;">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row mt-4 dashboardClub">
+        <div class="col-lg-12 mb-lg-0 mb-4">
+            <div class="card ">
+                <div class="card-header pb-0 p-3">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="mb-2">Próximo Jogo</h6>
+                    </div>
+                </div>
+                
+                <div id="noGameDiv" style="text-align: center; height: 200px; padding-top: 80px;">
+                    NÃO EXISTEM JOGOS
+                </div>
+                
+                <div class="row col-md-12" id="gameDiv" style="text-align: center; height: 100%; padding-top: 50px;">
+
+                    <div class="col-md-12" style="margin-bottom: 40px;">
+                        <h6 id="gameCompetition"></h6>
+                    </div>
+
+                    <div class="col-md-5">
+                        <h3 id="clubName"></h3>             
+                    </div>
+
+                    <div class="col-md-2"><h4>VS</h4></div>
+
+                    <div class="col-md-5">
+                        <h3 id="opponentName"></h3>
+                    </div>
+                    
+                    <div class="col-md-12" style="margin-top: 20px; margin-bottom: 30px;">
+                        <h6 id="gameLocal"></h6>
+                        <h6 id="gameDate"></h6>
+                        <h6 id="gameHour"></h6>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+   
+    <div class="row mt-4 col-md-6 dashboardClub">
+        <div class="col-lg-12 mb-lg-0 mb-4">
+            <div class="card ">
+                <div class="card-header pb-0 p-3">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="mb-2">Estátisticas Equipa</h6>
+                    </div>
+                </div>
+                <div class="teamStatistics row col-md-12" style="padding-top: 10px; padding-bottom: 20px; text-align: center; min-height: 100%;">
+                    <div class="col-md-4">
+                        <h6>Vitórias</h6>
+                        <h5 id="clubVictories"></h5>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Empates</h6>
+                        <h5 id="clubDraws"></h5>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Derrotas</h6>
+                        <h5 id="clubDefeats"></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row mt-4 col-md-6 dashboardClub">
+        <div class="col-md-12">
+            <div class="card ">
+                <div class="card-header pb-0 p-3">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="mb-2">Melhor Marcador e Assistente</h6>
+                    </div>
+                </div>
+                <div class="playersStatistics row col-lg-12" style="padding-top:10px; padding-bottom: 20px; text-align: center; height: 100%">
+                    <div class="col-md-6">
+                        <h6>Marcador</h6>
+                        <h6 id="scorer"></h6>
+                        <h5 id="goals"></h5>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Assistente</h6>
+                        <h6 id="assistent"></h6>
+                        <h5 id="assists"></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+</html>
+
+<script>
+
+    var dashboard = {
+
+        getDashboardInitialData: function () {
+            
+            var obj = {
+                route: "getDashboardInitialData"
+            }
+
+            $.ajax({
+                url: "../route.php",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    
+                    data = jQuery.parseJSON(data);
+                    
+                    if(data.game != null){
+                        $("#gameDiv").show();
+                        $("#noGameDiv").hide();
+
+                        $("#gameCompetition").html(data.game.competition);
+                        $("#clubName").html(contentHub.userInfo.user.clubInfo.name);
+                        $("#opponentName").html(data.game.opponent);
+                        $("#gameLocal").html(data.game.local);
+                        $("#gameDate").html(data.game.date);
+                        $("#gameHour").html(data.game.time);
+                    }
+
+                    if (data.scorer != null){
+                        $("#scorer").html(data.scorer.name + " " + data.scorer.surname);
+                        $("#goals").html(data.scorer.goals);
+                    }else{
+                        $("#scorer").html("SEM JOGADOR");
+                    }
+
+                    if (data.assister != null){
+                        $("#assistent").html(data.assister.name + " " + data.assister.surname);
+                        $("#assists").html(data.assister.assists);
+                    }else{
+                        $("#assistent").html("SEM JOGADOR");
+                    }
+                   
+                    $("#clubDefeats").html(data.clubStats.defeats);
+                    $("#clubDraws").html(data.clubStats.draws);
+                    $("#clubVictories").html(data.clubStats.victories);
+                    
+                    let maxHeight = Math.max($('.teamStatistics').height(), $('.playersStatistics').height());
+                    $('.teamStatistics, .playersStatistics').height(maxHeight);
+                   
+                },
+                error: function (data) {
+                    var responseText = jQuery.parseJSON(data.responseText);
+                    alert(responseText.message);
+                }
+            });
+        },
+    };
+
+    $(document).ready(function () {
+  
+        $(".dashboardClub").hide();
+        $(".dashboardNoClub").hide();
+
+        if (contentHub.userInfo.user.clubInfo == null){
+            $(".dashboardNoClub").show();
+            if (contentHub.userInfo.user.role == 1){
+                $("#mensageNoClub").html("JUNTE-SE OU CRIE UM CLUBE");
+            }else{
+                $("#mensageNoClub").html("JUNTE-SE A UM CLUBE");
+            }
+            
+        }else{
+            $(".dashboardClub").show();
+            $("#gameDiv").hide();
+            dashboard.getDashboardInitialData();
+        }
+
+        $(".changePageName").html("Dashboard");
+
+        $(".nav-link-permissions.active").removeClass("active");
+        $(".nav-link-dashboard")[0].className += " active"
+
+    });
+
+
+</script>

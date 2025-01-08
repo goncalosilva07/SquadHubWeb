@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4 dashboardClub">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="row col-md-12" id="gameDiv" style="text-align: center; height: 100%; padding-top: 50px;">
+
+                <div class="col-md-12" style="margin-bottom: 40px;">
+                    <h6 id="gameCompetition"></h6>
+                </div>
+
+                <div class="col-md-5">
+                    <h3 id="clubName"></h3>  
+                    <h3 id="clubGoals"></h3>                    
+                </div>
+
+                <div class="col-md-2"><h4>VS</h4></div>
+
+                <div class="col-md-5 row">
+                    <h3 id="opponentName"></h3>
+                    <h3 id="opponentGoals"></h3>
+                </div>
+                
+                <div class="col-md-12" style="margin-top: 20px; margin-bottom: 30px;">
+                    <h6 id="gameLocal"></h6>
+                    <h6 id="gameDate"></h6>
+                    <h6 id="gameHour"></h6>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Estatísticas</h6>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+
+   
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Golos Marcados</label>
+                            <input class="form-control updateStatistics" type="number" id="goals_scored" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Golos Sofridos</label>
+                            <input class="form-control updateStatistics" type="number" id="goals_conceded" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Posse de Bola</label>
+                            <input class="form-control updateStatistics" type="number" id="ball_posession" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Remates</label>
+                            <input class="form-control updateStatistics" type="number" id="shots" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Remates à Baliza</label>
+                            <input class="form-control updateStatistics" type="number" id="shots_goal" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Faltas</label>
+                            <input class="form-control updateStatistics" type="number" id="fouls" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Passes</label>
+                            <input class="form-control updateStatistics" type="number" id="passes" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-8"></div>
+
+
+
+
+
+
+                    <div class="col-md-8 row" id="scorersDiv" style="margin-top: 50px; margin-left: auto; margin-right: auto;">
+                        <div class="row goalsAndAssistsDiv">
+                            <h6>Marcadores</h6>
+                        <div class="col-md-4">
+                          <select class="form-select" id="players_select" style="width: 100%;">
+                            <option value="-1" selected>Escolha um jogador</option>
+                          </select>
+                        </div>
+            
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <input class="form-control" type="number" id="scorerGoals" placeholder="Golos" style="width: 100%;">
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <input class="form-control" type="number" id="assisterAssists" placeholder="Assistências" style="width: 100%;">
+                            </div>
+                        </div>
+
+                        
+                        <div class="col-md-1">
+                          <a class="btn btn-success btn-sm" type="button" id="addScorer">Adicionar</a>
+                        </div>
+                        </div>
+                        
+            
+                        <table id="scorersTable" class="display" style="width:100%">
+                          <thead>
+                            <tr>
+                              <th>id</th>
+                              <th>idUser</th>
+                              <th>Nome</th>
+                              <th>Golos</th>
+                              <th>Assistências</th>
+                              <th>isSave</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                        </table>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="card-footer pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <a class="btn btn-success btn-sm" type="button" id="submitGameStatistics" style="text-align: right">Submeter</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var gameStatistics = {
+        idGameStatistics: null,
+        idGame: localStorage.getItem("idGame"),
+        gameDate: localStorage.getItem("gameDate"),
+        table: null,
+        tableData: [],
+
+        getGameStatistics: function (){
+
+            var obj = {
+                route: 'getGameStatistics',
+                idGame: gameStatistics.idGame
+            }
+
+            if (obj.idGame != null){
+                $.ajax({
+                    url: "../route.php",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(obj),
+                    success: function (data) {
+                        data = jQuery.parseJSON(data);
+                        
+                        $("#gameCompetition").html(data.gameData.competition);
+                        $("#clubName").html(contentHub.userInfo.user.clubInfo.name);
+                        $("#opponentName").html(data.gameData.opponent);
+                        $("#gameLocal").html(data.gameData.local);
+                        $("#gameDate").html(data.gameData.date);
+                        $("#gameHour").html(data.gameData.time);
+
+                        if (data.gameStatistics != null){
+                            gameStatistics.idGameStatistics = data.gameStatistics.id;
+                            $("#goals_scored").val(data.gameStatistics.goals_scored);
+                            $("#goals_conceded").val(data.gameStatistics.goals_conceded);
+                            $("#ball_posession").val(data.gameStatistics.ball_posession);
+                            $("#shots").val(data.gameStatistics.shots);
+                            $("#shots_goal").val(data.gameStatistics.shots_goal);
+                            $("#fouls").val(data.gameStatistics.fouls);
+                            $("#passes").val(data.gameStatistics.passes);
+
+                            $("#clubGoals").html(data.gameStatistics.goals_scored);
+                            $("#opponentGoals").html(data.gameStatistics.goals_conceded);
+                            //$("#clubName").html($("#clubName").html() + '   ' + data.gameStatistics.goals_scored);
+                            //$("#opponentName").html(data.gameStatistics.goals_conceded + '   ' + $("#opponentName").html());
+                        }
+
+                        if (data.gamePlayers.length > 0){
+
+                            var options = [];
+                            
+                            data.gamePlayers.forEach(player => {
+                                var obj = {
+                                id: player.idUser,
+                                text: player.name + " " + player.surname
+                                }
+                                options.push(obj);
+                            });
+
+                            $('#players_select').select2();
+
+                            options.forEach(function (option) {
+                                const newOption = new Option(option.text, option.id, false, false);
+                                $('#players_select').append(newOption).trigger('change');
+                            });
+
+                            
+                            gameStatistics.tableData = data.gameScorers;
+
+                            $('#scorersTable').DataTable().destroy(); // Remove a instância atual
+
+                            gameStatistics.table = $('#scorersTable').DataTable({
+                                data: gameStatistics.tableData,
+                                columns: [
+                                { data: "id" },
+                                { data: "idUser" },
+                                { data: "name" },
+                                { data: "goals" },
+                                { data: "assists" },
+                                { data: "isSave" }
+                                ],
+
+                                columnDefs: [
+                                {
+                                    "targets": 0,
+                                    "visible": false
+                                },
+                                {
+                                    "targets": 1,
+                                    "visible": false
+                                },
+                                {
+                                    "targets": 5,
+                                    "visible": false
+                                },
+                                {
+                                    "targets": 6,
+                                    "width": "8%",
+                                    "orderable": false,
+                                    "render": function (data, type, row, meta) {
+                                    var html = "<div style='width: 100%'>";                                 
+                                    if (contentHub.userInfo.user.permissions.find(x => x.id == 27) != null){
+                                        html += "<a type='button' title='Remover' class='material-symbols-outlined deleteScorer'>delete</a>";
+                                    }                                  
+                                    html += "</div>";
+                                    return html;
+                                    }
+                                },
+
+                                ],
+                            });
+                        }else{
+                            $("#scorersDiv").remove();
+                        }
+
+                       
+                        
+
+                    },
+                    error: function (data) {
+                        var responseText = jQuery.parseJSON(data.responseText);
+                        alert(responseText.message);
+                    }
+                });
+            }else{
+                alert("Jogo não reconhecido. Tente novamente.");
+            }
+        },
+
+        addScorer: function () {
+
+            if ($("#players_select").val() != -1 && ($("#scorerGoals").val() > 0 || $("#assisterAssists").val() > 0) && ($("#scorerGoals").val() != "" && $("#assisterAssists").val() != "")){
+                var obj = {
+                    id: null,
+                    idUser: $("#players_select").select2('data')[0].id,
+                    name: $("#players_select").select2('data')[0].text,
+                    goals: $("#scorerGoals").val(),
+                    assists: $("#assisterAssists").val(),
+                    isSave: false
+                }
+
+                $("#scorerGoals").val(null);
+                $("#assisterAssists").val(null);
+                $("#players_select").val(-1).trigger("change");
+
+                
+
+                if (!(gameStatistics.tableData.find(x => x.idUser == obj.idUser))) {
+                    gameStatistics.tableData.push(obj);
+                    gameStatistics.updateTable();
+                } else {
+                    alert("Jogadores Repetidos.");
+                }
+            }       
+        },
+
+        updateTable: function () {
+            gameStatistics.table.clear().rows.add(gameStatistics.tableData).draw();
+        },
+
+        submitGameStatistics: function (){
+
+            var obj = {
+                route: 'submitGameStatistics',
+                idGame: gameStatistics.idGame,
+                idGameStatistics : gameStatistics.idGameStatistics,
+                goals_scored: $("#goals_scored").val(),
+                goals_conceded: $("#goals_conceded").val(),
+                ball_posession: $("#ball_posession").val(),
+                shots: $("#shots").val(),
+                shots_goal: $("#shots_goal").val(),
+                fouls: $("#fouls").val(),
+                passes: $("#passes").val(),
+                scorerList: gameStatistics.tableData.filter(x => x.isSave == false)
+            }
+
+            
+
+            var totalGoals = 0;
+
+            gameStatistics.tableData.forEach(element => {
+                totalGoals += parseInt(element.goals);
+            });
+
+            
+
+            if (parseInt(obj.goals_scored) >= totalGoals){
+                if (obj.idGame != null){
+                    if (obj.goals_scored >= 0 && obj.goals_conceded >= 0 && obj.ball_posession >= 0
+                    && obj.shots >= 0 && obj.shots_goal >= 0 && obj.fouls >= 0
+                    && obj.passes >= 0
+                    ){
+                        $.ajax({
+                        url: "../route.php",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify(obj),
+                        success: function (data) {
+                            
+                            $(".contentHubInjection").html('');
+                            $(".contentHubInjection").load("./game/game.html");
+                            $(".changePageName").html("Game");
+                        },
+                        error: function (data) {
+                            var responseText = jQuery.parseJSON(data.responseText);
+                            alert(responseText.message);
+                        }
+                        });
+                    }else{
+                        alert("Preencha os dados corretamente.");
+                    }             
+                }else{
+                    alert("Jogo não reconhecido. Tente novamente.");
+                }
+            }else{
+                alert("Número de golos marcados pelos jogadores maior do que os golos marcados pela equipa.");
+            }   
+        },
+
+        deleteScorer: function (idUser) {
+            gameStatistics.tableData = gameStatistics.tableData.filter(x => x.idUser != idUser);
+            gameStatistics.updateTable();
+        },
+
+        deleteScorerDB: function (idUser, goals, assists, id) {
+
+            var obj = {
+                route: "deleteScorer",
+                id: id,
+                idUser: idUser,       
+                goals: goals,
+                assists: assists
+            }
+
+            $.ajax({
+                    url: "../route.php",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(obj),
+                    success: function (data) {   
+                                        
+                        gameStatistics.tableData = gameStatistics.tableData.filter(x => x.idUser != idUser);
+                        gameStatistics.updateTable();
+                    },
+                    error: function (data) {
+                        
+                        var responseText = jQuery.parseJSON(data.responseText);
+                        alert(responseText.message);
+                    }
+                });
+        },
+
+    };
+
+    $(document).ready(function () {
+        
+        gameStatistics.getGameStatistics();
+
+        localStorage.removeItem("idGame");
+        localStorage.removeItem("gameDate");
+
+        
+        if (contentHub.userInfo.user.permissions.find(x => x.id == 27) == null){
+            $("#submitGameStatistics").remove();
+            $(".goalsAndAssistsDiv").remove();
+            $("#addScorer").remove();
+            $(".updateStatistics").prop('disabled', true);
+        } 
+
+        $(document).off('click', '#addScorer');
+        $(document).on('click', '#addScorer', function (e) {
+            gameStatistics.addScorer();
+        });
+
+        $(document).off('click', '#submitGameStatistics');
+        $(document).on('click', '#submitGameStatistics', function (e) {
+            gameStatistics.submitGameStatistics();
+        });
+
+        $(document).off('click', '.deleteScorer');
+        $(document).on('click', '.deleteScorer', function (e) {
+            var rowData = gameStatistics.table.row(e.target.parentElement.parentElement._DT_CellIndex.row).data();
+
+            if (rowData.isSave == true){
+                gameStatistics.deleteScorerDB(rowData.idUser, rowData.goals, rowData.assists, rowData.id);
+            }else{
+                gameStatistics.deleteScorer(rowData.idUser);
+            }      
+        });
+    });
+
+</script>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Treinos</h6>
+                    <a class="btn btn-success btn-sm" type="button" id="addTraining" style="text-align: right">Adicionar Treino</a>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+
+                    <div class="col-md-12" style="margin-top: 20px">
+                        <table id="trainingTable" class="display" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>idClub</th>
+                                <th>Tipo de Treino</th>
+                                <th>Data</th>
+                                <th>Hora Início</th>
+                                <th>Hora Fim</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var training = {
+        table: null,
+        tableData: [],
+
+        getTraining: function (){
+            var obj = {
+                route: 'getTrainingSessions'
+            }
+
+            $.ajax({
+                url: "../route.php",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    
+                    data = jQuery.parseJSON(data);
+                    training.tableData = data;
+                    training.updateTable();
+                },
+                error: function (data) {
+                    var responseText = jQuery.parseJSON(data.responseText);
+                    alert(responseText.message);
+                }
+            });
+
+        },
+
+        deleteTraining: function (idTraining){
+
+            var obj = {
+                route: "deleteTrainingSession",
+                idTraining: idTraining
+            }
+            
+            $.ajax({
+                url: "../route.php",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    
+                    $(".contentHubInjection").html('');
+                    $(".contentHubInjection").load("./training/training.html");
+                    $(".changePageName").html("Training Sessions");
+                },
+                error: function (data) {
+                    var responseText = jQuery.parseJSON(data.responseText);
+                    alert(responseText.message);
+                }
+            });
+
+        },
+
+        ratingTraining: function (idTraining){
+
+            localStorage.setItem('idTraining', idTraining);
+            $(".contentHubInjection").html('');
+            $(".contentHubInjection").load("./training/trainingRating.html");
+            $(".changePageName").html("Training Sessions Players Rating");
+
+        },
+
+        updateTable: function () {
+            training.table.clear().rows.add(training.tableData).draw();
+        },
+    };
+
+    $(document).ready(function () {
+
+        training.getTraining();
+
+        if (contentHub.userInfo.user.permissions.find(x => x.id == 11) == null){
+            $("#addTraining").remove();
+        }
+
+        $('#trainingTable').DataTable().destroy(); // Remove a instância atual
+        //$('#gamesTable').empty();
+
+        training.table = $('#trainingTable').DataTable({
+            data: training.tableData,
+            columns: [
+                { data: "id" },
+                { data: "idClub" },
+                { data: "trainingType" },
+                { data: "date" },
+                { data: "startTime" },
+                { data: "endTime" },
+                { data: null },
+            ],
+
+            columnDefs: [
+                {
+                    "targets": 0,
+                    "visible": false
+                },
+                {
+                    "targets": 1,
+                    "visible": false
+                },
+                {
+                    "targets": 6,
+                    "width": "8%",
+                    "orderable": false,
+                    "render": function(data, type, row, meta) {
+                        var html = "<div style='width: 100%'>";
+
+                        var trainingDate = moment(row.date, "YYYY-MM-DD");
+                        var today = moment();
+
+                        if ((trainingDate <= today) && (contentHub.userInfo.user.permissions.find(x => x.id == 24) != null)){
+                            html += "<a type='button' title='Adicionar Performance' class='material-symbols-outlined addTrainingPerformance'>thumbs_up_down</a>";
+                        }
+
+                        if (contentHub.userInfo.user.permissions.find(x => x.id == 12) != null){
+                            html += "<a type='button' title='Remover' class='material-symbols-outlined removeTraining'>delete</a>";
+                        }
+
+                        html += "</div>";
+                        return html;
+                    }
+                },
+
+            ],
+        });
+
+        $(document).off('click', '#addTraining');
+        $(document).on('click', '#addTraining', function(e) {
+            $(".contentHubInjection").html('');
+            $(".contentHubInjection").load("./training/addTraining.html");
+            $(".changePageName").html("Add Training Session");
+        });
+
+        $(document).off('click', '.removeTraining');
+        $(document).on('click', '.removeTraining', function(e) {
+            var rowData = training.table.row(e.target.parentElement.parentElement._DT_CellIndex.row).data();
+            training.deleteTraining(rowData.id);
+        });
+
+        $(document).off('click', '.addTrainingPerformance');
+        $(document).on('click', '.addTrainingPerformance', function(e) {
+            var rowData = training.table.row(e.target.parentElement.parentElement._DT_CellIndex.row).data();
+            training.ratingTraining(rowData.id);
+        });
+    });
+
+</script>
